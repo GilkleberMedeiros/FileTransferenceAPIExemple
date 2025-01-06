@@ -26,6 +26,8 @@ class File(models.Model):
     )
     url = models.URLField(
         name="url",
+        null=True,
+        blank=True,
     )
     uploaded_date = models.DateField(
         name="uploaded_date",
