@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin  # type: ignore
 from django.urls import path  # type: ignore
+from FTAPI.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("files/", ListCreateDelFilesView.as_view(), name="ListCreateDelFiles"),
 ]
