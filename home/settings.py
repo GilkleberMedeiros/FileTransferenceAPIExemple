@@ -148,3 +148,6 @@ AUTH_USER_MODEL = "FTAPI.User"
 
 # Media confs
 MEDIA_ROOT = os.path.join(BASE_DIR, "home/UserMedia/")
+
+
+USER_FILES_ENDPOINT = "files/"
