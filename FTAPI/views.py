@@ -17,6 +17,24 @@ from urllib.parse import urljoin
 
 # Create your views here.
 class ListCreateDelFilesView(APIView):
+    def get(self, request: Request) -> Response:
+        # TODO: Verificar se a view está correta.
+        # TODO: Implementar Caching e caching headers.
+        file_qs = File.objects.all()
+        files_serialized = FileSerializer(file_qs, many=True)
+        exclude_fields = ["file"]
+
+        files_data = files_serialized.data
+
+        for file in files_data:
+            for field in exclude_fields:
+                file.pop(field)
+
+        json_response = JSONRenderer().render(files_data)
+
+        return Response(data=json_response)
+
+
     def post(self, request: Request) -> Response:
         protocol = "https" if request.is_secure() else "http"
         host = request.get_host()
