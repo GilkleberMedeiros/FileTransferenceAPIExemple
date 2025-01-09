@@ -19,6 +19,10 @@ from home.settings import USER_FILES_ENDPOINT
 import io
 from urllib.parse import urljoin
 
+
+# TODO: Modularizar as views em funções ou métodos
+# TODO: Criar a documentação da API
+
 # Create your views here.
 class ListCreateFilesView(APIView):
 
