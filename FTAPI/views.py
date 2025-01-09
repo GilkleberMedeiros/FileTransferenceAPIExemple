@@ -1,6 +1,8 @@
 from django.shortcuts import render  # type: ignore
 from django.http.request import HttpRequest
 from django.core.files.uploadedfile import UploadedFile
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,9 +19,9 @@ from urllib.parse import urljoin
 
 # Create your views here.
 class ListCreateDelFilesView(APIView):
+
+    @method_decorator(cache_page(60))
     def get(self, request: Request) -> Response:
-        # TODO: Verificar se a view está correta.
-        # TODO: Implementar Caching e caching headers.
         file_qs = File.objects.all()
         files_serialized = FileSerializer(file_qs, many=True)
         exclude_fields = ["file"]
@@ -31,8 +33,10 @@ class ListCreateDelFilesView(APIView):
                 file.pop(field)
 
         json_response = JSONRenderer().render(files_data)
+        response = Response(data=json_response)
+        response.headers["cache-control"] = "no-store"
 
-        return Response(data=json_response)
+        return response
 
 
     def post(self, request: Request) -> Response:

@@ -102,6 +102,14 @@ DATABASES = {
     }
 }
 
+# Cache confs
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://localhost:6379",
+        "KEY_PREFIX": "FTAPI",
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
