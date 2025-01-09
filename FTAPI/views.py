@@ -1,8 +1,10 @@
 from django.shortcuts import render  # type: ignore
 from django.http.request import HttpRequest
 from django.core.files.uploadedfile import UploadedFile
+from django.urls import resolve
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from django.core.cache import cache
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,7 +20,7 @@ import io
 from urllib.parse import urljoin
 
 # Create your views here.
-class ListCreateDelFilesView(APIView):
+class ListCreateFilesView(APIView):
 
     @method_decorator(cache_page(60))
     def get(self, request: Request) -> Response:
@@ -81,3 +83,38 @@ class ListCreateDelFilesView(APIView):
         json_response = JSONRenderer().render(data=file_data)
 
         return Response(data=json_response)
+    
+class DetailDelFilesView(APIView):
+    def get(self, request: Request, file_id: int) -> Response:
+        json_renderer = JSONRenderer()
+
+        # Getting from cache if exists
+        url_obj = resolve(request.path_info)
+        key = url_obj.route + "_" + str(file_id)
+
+        if cache.has_key(key):
+            json_response = json_renderer.render(data=cache.get(key))
+
+            return Response(data=json_response)
+        
+        try:
+            file = File.objects.get(id=file_id)
+        except:
+            error = {"error": f"File with specified id {file_id} couldn't be found to be returned."}
+            error = json_renderer.render(error)
+
+            return Response(data=error, status=status.HTTP_404_NOT_FOUND)
+
+        file_data = FileSerializer(file).data
+        file_data.pop("file")
+        file_bytes = file.file.file.read()
+        file_hex = file_bytes.hex(sep=" ", bytes_per_sep=2)
+        file_data["file_hex"] = file_hex
+        
+        cache.set(key, file_data, 60)
+
+        json_response = json_renderer.render(file_data)
+        response = Response(data=json_response)
+
+        return response
+

@@ -20,5 +20,6 @@ from FTAPI.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("files/", ListCreateDelFilesView.as_view(), name="ListCreateDelFiles"),
+    path("files/", ListCreateFilesView.as_view(), name="ListCreateFiles"),
+    path("files/<int:file_id>/", DetailDelFilesView.as_view(), name="DetailDelFiles"),
 ]
