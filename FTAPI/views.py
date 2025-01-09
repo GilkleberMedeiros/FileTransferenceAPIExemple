@@ -118,3 +118,24 @@ class DetailDelFilesView(APIView):
 
         return response
 
+    def delete(self, request: Request, file_id: int) -> Response:
+        try:
+            file = File.objects.get(id=file_id)
+        except:
+            error = {"error": f"File with specified id {file_id} couldn't be found to delete."}
+            error = JSONRenderer().render(error)
+
+            return Response(data=error, status=status.HTTP_404_NOT_FOUND)
+        
+        # deleting from DB and fs
+        file.delete()
+        file.file.delete(save=False)
+
+        # deleting from cache
+        url_obj = resolve(request.path_info)
+        key = url_obj.route + "_" + str(file_id)
+        cache.delete(key)
+
+        response = Response(status=status.HTTP_200_OK)
+
+        return response
