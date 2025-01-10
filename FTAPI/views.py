@@ -86,7 +86,7 @@ class DetailDelFilesView(APIView, FileHandlerMixin):
     def get(self, request: Request, file_id: int) -> Response:
         # Getting from cache if exists
         url_obj = resolve(request.path_info)
-        key = url_obj.route + "_" + str(file_id)
+        key = key = get_unique_resource_key(url_obj.route, str(file_id))
 
         if cache.has_key(key):
             return Response(data=cache.get(key))
@@ -123,7 +123,7 @@ class DetailDelFilesView(APIView, FileHandlerMixin):
 
         # deleting from cache
         url_obj = resolve(request.path_info)
-        key = url_obj.route + "_" + str(file_id)
+        key = get_unique_resource_key(url_obj.route, str(file_id))
         cache.delete(key)
 
         response = Response(status=status.HTTP_200_OK)
