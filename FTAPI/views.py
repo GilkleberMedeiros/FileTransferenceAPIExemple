@@ -111,8 +111,7 @@ class DetailDelFilesView(APIView, FileHandlerMixin):
 
         file_data = FileSerializer(file).data
         file_data.pop("file")
-        file_bytes = file.file.file.read()
-        file_hex = file_bytes.hex(sep=" ", bytes_per_sep=2)
+        file_hex = self.fieldfile_to_hex(file.file)
         file_data["file_hex"] = file_hex
         
         cache.set(key, file_data, 60)
