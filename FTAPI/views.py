@@ -34,7 +34,7 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         files_data = files_serialized.data
 
         for file in files_data:
-            file.pop("field")
+            file.pop("file")
 
         response = Response(data=files_data)
         response.headers["cache-control"] = "no-store"

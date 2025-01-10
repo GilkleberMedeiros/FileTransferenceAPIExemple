@@ -1,8 +1,10 @@
 from django.core.files.uploadedfile import UploadedFile
-from django.db.models import FieldFile
 
 import io
+from typing import TypeVar
 
+
+DjangoFieldFile = TypeVar("DjangoFieldFile")
 
 class FileHandlerMixin():
 
@@ -13,7 +15,7 @@ class FileHandlerMixin():
         and return a file object io.BytesIO.
         """
         file_bytes = bytes.fromhex(file_hex)
-        file_obj = io.BytesIO(file_bytes)
+        return io.BytesIO(file_bytes)
 
     @staticmethod
     def hex_to_django_file_obj(file_hex: str, filename: str) -> UploadedFile:
@@ -27,10 +29,15 @@ class FileHandlerMixin():
     
     @staticmethod
     def fieldfile_to_hex(
-            field_file: FieldFile, 
+            field_file: DjangoFieldFile, 
             chunk_size: int = -1, 
             sep: str = " ", 
-            bytes_per_sep: int = 2
+            bytes_per_sep: int = 1
         ) -> str:
+        """
+        Receive a django FieldFile and return file bytes content 
+        as hexadecimal string.
+        """
         file_bytes = field_file.file.read(chunk_size)
+
         return file_bytes.hex(sep=sep, bytes_per_sep=bytes_per_sep)
