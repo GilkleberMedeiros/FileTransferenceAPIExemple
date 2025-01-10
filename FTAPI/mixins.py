@@ -38,6 +38,7 @@ class FileHandlerMixin():
         Receive a django FieldFile and return file bytes content 
         as hexadecimal string.
         """
-        file_bytes = field_file.file.read(chunk_size)
+        with field_file.open("rb") as f:
+            file_bytes = f.read(chunk_size)
 
         return file_bytes.hex(sep=sep, bytes_per_sep=bytes_per_sep)
