@@ -48,8 +48,11 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         try:
             file_hex = request.data.pop("file_hex")
         except Exception as e:
+            err = {"Error": f"Failed while extracting file_hex field from request body with error {e}."}
+            json_err = JSONRenderer().render(err)
+
             return Response(
-                data=f"Error: {e}",
+                data=json_err,
                 status=status.HTTP_400_BAD_REQUEST,
             )
         data = request.data
@@ -62,9 +65,12 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         file_srlzd = FileSerializer(data=data)
 
         try: file_srlzd.is_valid(raise_exception=True)
-        except Exception as e:
+        except:
+            err = {"Error": f"Data isn't valid."}
+            json_err = JSONRenderer().render(err)
+
             return Response(
-                data=f"Error: {e}",
+                data=json_err,
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
