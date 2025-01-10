@@ -27,7 +27,9 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
 
     @method_decorator(cache_page(60))
     def get(self, request: Request) -> Response:
-        file_qs = File.objects.all()
+        try: file_qs = File.objects.all()
+        except: 
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         files_serialized = FileSerializer(file_qs, many=True)
 
         files_data = files_serialized.data
