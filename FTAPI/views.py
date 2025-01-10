@@ -8,7 +8,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from rest_framework.renderers import JSONRenderer
 
 from .models import File
 from .serializers import FileSerializer
@@ -37,8 +36,7 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         for file in files_data:
             file.pop("field")
 
-        json_response = JSONRenderer().render(files_data)
-        response = Response(data=json_response)
+        response = Response(data=files_data)
         response.headers["cache-control"] = "no-store"
 
         return response
@@ -49,10 +47,9 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
             file_hex = request.data.pop("file_hex")
         except Exception as e:
             err = {"Error": f"Failed while extracting file_hex field from request body with error {e}."}
-            json_err = JSONRenderer().render(err)
 
             return Response(
-                data=json_err,
+                data=err,
                 status=status.HTTP_400_BAD_REQUEST,
             )
         data = request.data
@@ -67,10 +64,9 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         try: file_srlzd.is_valid(raise_exception=True)
         except:
             err = {"Error": f"Data isn't valid."}
-            json_err = JSONRenderer().render(err)
 
             return Response(
-                data=json_err,
+                data=err,
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
@@ -84,28 +80,21 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         file_data = FileSerializer(file_model).data
         file_data.pop("file")
 
-        json_response = JSONRenderer().render(data=file_data)
-
-        return Response(data=json_response)
+        return Response(data=file_data)
     
 class DetailDelFilesView(APIView, FileHandlerMixin):
     def get(self, request: Request, file_id: int) -> Response:
-        json_renderer = JSONRenderer()
-
         # Getting from cache if exists
         url_obj = resolve(request.path_info)
         key = url_obj.route + "_" + str(file_id)
 
         if cache.has_key(key):
-            json_response = json_renderer.render(data=cache.get(key))
-
-            return Response(data=json_response)
+            return Response(data=cache.get(key))
         
         try:
             file = File.objects.get(id=file_id)
         except:
             error = {"error": f"File with specified id {file_id} couldn't be found to be returned."}
-            error = json_renderer.render(error)
 
             return Response(data=error, status=status.HTTP_404_NOT_FOUND)
 
@@ -116,8 +105,7 @@ class DetailDelFilesView(APIView, FileHandlerMixin):
         
         cache.set(key, file_data, 60)
 
-        json_response = json_renderer.render(file_data)
-        response = Response(data=json_response)
+        response = Response(data=file_data)
 
         return response
 
@@ -126,7 +114,6 @@ class DetailDelFilesView(APIView, FileHandlerMixin):
             file = File.objects.get(id=file_id)
         except:
             error = {"error": f"File with specified id {file_id} couldn't be found to delete."}
-            error = JSONRenderer().render(error)
 
             return Response(data=error, status=status.HTTP_404_NOT_FOUND)
         
