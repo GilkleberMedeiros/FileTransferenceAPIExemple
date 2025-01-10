@@ -29,13 +29,11 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
     def get(self, request: Request) -> Response:
         file_qs = File.objects.all()
         files_serialized = FileSerializer(file_qs, many=True)
-        exclude_fields = ["file"]
 
         files_data = files_serialized.data
 
         for file in files_data:
-            for field in exclude_fields:
-                file.pop(field)
+            file.pop("field")
 
         json_response = JSONRenderer().render(files_data)
         response = Response(data=json_response)
