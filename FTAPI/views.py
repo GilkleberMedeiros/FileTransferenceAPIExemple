@@ -1,6 +1,4 @@
 from django.shortcuts import render  # type: ignore
-from django.http.request import HttpRequest
-from django.core.files.uploadedfile import UploadedFile
 from django.urls import resolve
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
@@ -14,18 +12,18 @@ from rest_framework.renderers import JSONRenderer
 
 from .models import File
 from .serializers import FileSerializer
+from .mixins import FileHandlerMixin
 from .utils import *
 from home.settings import USER_FILES_ENDPOINT
 
 from urllib.parse import urljoin
-import io
 
 
 # TODO: Modularizar as views em funções ou métodos
 # TODO: Criar a documentação da API
 
 # Create your views here.
-class ListCreateFilesView(APIView):
+class ListCreateFilesView(APIView, FileHandlerMixin):
 
     @method_decorator(cache_page(60))
     def get(self, request: Request) -> Response:
@@ -56,9 +54,7 @@ class ListCreateFilesView(APIView):
             )
         data = request.data
 
-        file_bytes = bytes.fromhex(file_hex)
-        file_obj = io.BytesIO(file_bytes)
-        file_obj = UploadedFile(file_obj, name=data["filename"], size=len(file_obj.getvalue()))
+        file_obj = self.hex_to_django_file_obj(file_hex, data["filename"])
         size = file_obj.size
         data["file"] = file_obj
         data["size"] = size
@@ -86,7 +82,7 @@ class ListCreateFilesView(APIView):
 
         return Response(data=json_response)
     
-class DetailDelFilesView(APIView):
+class DetailDelFilesView(APIView, FileHandlerMixin):
     def get(self, request: Request, file_id: int) -> Response:
         json_renderer = JSONRenderer()
 
