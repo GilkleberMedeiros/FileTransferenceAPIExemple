@@ -14,10 +14,11 @@ from rest_framework.renderers import JSONRenderer
 
 from .models import File
 from .serializers import FileSerializer
+from .utils import *
 from home.settings import USER_FILES_ENDPOINT
 
-import io
 from urllib.parse import urljoin
+import io
 
 
 # TODO: Modularizar as views em funções ou métodos
@@ -46,9 +47,6 @@ class ListCreateFilesView(APIView):
 
 
     def post(self, request: Request) -> Response:
-        protocol = "https" if request.is_secure() else "http"
-        host = request.get_host()
-
         try:
             file_hex = request.data.pop("file_hex")
         except Exception as e:
@@ -76,7 +74,7 @@ class ListCreateFilesView(APIView):
         
         file_model = file_srlzd.save()
         
-        file_url = urljoin(f"{protocol}://{host}", USER_FILES_ENDPOINT)
+        file_url = urljoin(get_base_url(request), USER_FILES_ENDPOINT)
         file_url = urljoin(file_url,  str(file_model.id))
         file_model.url = file_url
         file_model.save()
