@@ -16,10 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin  # type: ignore
 from django.urls import path  # type: ignore
+
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
 from FTAPI.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
     path("files/", ListCreateFilesView.as_view(), name="ListCreateFiles"),
     path("files/<int:file_id>/", DetailDelFilesView.as_view(), name="DetailDelFiles"),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc_docs"),
 ]

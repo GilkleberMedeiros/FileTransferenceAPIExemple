@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "corsheaders",
     "rest_framework",
+    "drf_spectacular",
     "FTAPI",
 
 ]
@@ -157,5 +158,19 @@ AUTH_USER_MODEL = "FTAPI.User"
 # Media confs
 MEDIA_ROOT = os.path.join(BASE_DIR, "home/UserMedia/")
 
+# res_framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# drf-spectacular settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "FileTransferenceAPI",
+    "DESCRIPTION": """A small API with the only purpose 
+    of exemplify how a file could be transferred 
+    via json data.""",
+    "CONTACT": {"name": "Gilkleber Medeiros de Araújo"},
+    "LICENSE": {"name": "NONE LICENSE"},
+}
 
 USER_FILES_ENDPOINT = "files/"
