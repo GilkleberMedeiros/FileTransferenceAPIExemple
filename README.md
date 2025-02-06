@@ -4,6 +4,8 @@ Exemplificar como a transferência de arquivos poderia ser feitas através de re
 ## Como funciona
 A API recebe o nome do arquivo e o sufixo (Ex: .txt) separados junto com o conteúdo do arquivo em string hexadecimal. A mesma string hexadecimal é devolvida quando requisitado.
 
+Documentação completa em `http://localhost:8000/docs/`
+
 #### Dificuldades no desenvolvimento
 Quando a delete view estava sendo desenvolvida eu acabei executando ela sem garantir que os arquivos no sistema de arquivos seriam deletados juntos, o que resultou em um registro fantasma que quando eu tentava apagar normalmente com `file.delete()` e `file.file.delete(save=False)` ele não era deletado e só passava para o id `id + 1`. Isso não acontecia com nenhum outro id, só com esse que ficava pulando para o próximo.
 
