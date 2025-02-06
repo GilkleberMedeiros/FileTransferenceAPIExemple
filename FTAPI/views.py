@@ -7,14 +7,8 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.fields import (
-    IntegerField, CharField, FileField, URLField, 
-    DateField, TimeField, ChoiceField
-)
 from rest_framework import status
-
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, inline_serializer, OpenApiResponse, OpenApiRequest
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 
 from .models import File
 from .serializers import FileSerializer
@@ -24,18 +18,6 @@ from home.settings import USER_FILES_ENDPOINT
 
 from urllib.parse import urljoin
 
-
-# TODO: Criar a documentação da API
-FileCreationErrors = inline_serializer(
-    "FileCreationErrors", {
-        "Error": ChoiceField(
-            choices=[
-                "Failed while extracting file_hex field from request body.",
-                "data isn't valid.",
-            ]
-        ),
-    },
-)
 
 # Create your views here.
 class ListCreateFilesView(APIView, FileHandlerMixin):
