@@ -162,6 +162,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "home/UserMedia/")
 # res_framework settings
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 
 # drf-spectacular settings
