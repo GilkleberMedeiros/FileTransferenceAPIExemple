@@ -5,8 +5,10 @@ from django.utils.decorators import method_decorator
 from django.core.cache import cache
 
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
@@ -21,7 +23,9 @@ from urllib.parse import urljoin
 
 
 # Create your views here.
-class ListCreateFilesView(APIView, FileHandlerMixin):
+class ListCreateFilesView(GenericAPIView, FileHandlerMixin):
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 250
 
     @extend_schema(
         summary="List all uploaded files",
@@ -79,14 +83,17 @@ class ListCreateFilesView(APIView, FileHandlerMixin):
         try: file_qs = File.objects.all()
         except: 
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        files_serialized = FileSerializer(file_qs, many=True)
 
+        page = self.paginate_queryset(file_qs)
+        to_serialize_data = file_qs if page is None else page
+
+        files_serialized = FileSerializer(to_serialize_data, many=True)
         files_data = files_serialized.data
 
         for file in files_data:
             file.pop("file")
 
-        response = Response(data=files_data)
+        response = Response(data=files_data) if page is None else self.get_paginated_response(files_data)
         response.headers["cache-control"] = "no-store"
 
         return response
