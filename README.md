@@ -6,6 +6,10 @@ A API recebe o nome do arquivo e o sufixo (Ex: .txt) separados junto com o conte
 
 Documentação completa em `http://localhost:8000/docs/`
 
+## Testes
+Alguns testes, só para testar se os endpoints funcionam, podem ser rodados no insomnia:
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=FileTransferenceAPIExample&uri=https%3A%2F%2Fgithub.com%2FGilkleberMedeiros%2FFileTransferenceAPIExemple)
+
 #### Dificuldades no desenvolvimento
 Quando a delete view estava sendo desenvolvida eu acabei executando ela sem garantir que os arquivos no sistema de arquivos seriam deletados juntos, o que resultou em um registro fantasma que quando eu tentava apagar normalmente com `file.delete()` e `file.file.delete(save=False)` ele não era deletado e só passava para o id `id + 1`. Isso não acontecia com nenhum outro id, só com esse que ficava pulando para o próximo.
 
