@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 
@@ -85,10 +86,9 @@ class ListCreateFilesView(GenericAPIView, FileHandlerMixin):
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         page = self.paginate_queryset(file_qs)
-        data = file_qs if page is None else page
+        to_serialize_data = file_qs if page is None else page
 
-        files_serialized = FileSerializer(data, many=True)
-
+        files_serialized = FileSerializer(to_serialize_data, many=True)
         files_data = files_serialized.data
 
         for file in files_data:

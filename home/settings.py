@@ -27,10 +27,10 @@ SECRET_KEY = 'django-insecure-$9g+e+5+39_xhd&k_0%$63&#!6$q9j37p4p4er&tne#8u(utat
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-]  # type: ignore
+DEBUG_ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+PROD_ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+ALLOWED_HOSTS = DEBUG_ALLOWED_HOSTS if DEBUG else PROD_ALLOWED_HOSTS
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -106,7 +106,8 @@ DATABASES = {
 # Cache confs
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache" if DEBUG else 
+            "django.core.cache.backends.redis.RedisCache",
         "LOCATION": "redis://localhost:6379",
         "KEY_PREFIX": "FTAPI",
     }
@@ -161,6 +162,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "home/UserMedia/")
 # res_framework settings
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 
 # drf-spectacular settings
